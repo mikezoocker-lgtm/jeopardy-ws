@@ -112,17 +112,20 @@ io.on("connection", (socket) => {
 
     const room = getRoom(roomId);
 
-    // Host "claim"
-    if (role === "host") {
-      // Wenn es noch keinen Host gibt, setzen
-      if (!room.hostSocketId) {
-        room.hostSocketId = socket.id;
-      } else if (room.hostSocketId !== socket.id) {
-        // Already host exists
-        socket.emit("error_msg", "Es gibt bereits einen Host in diesem Raum.");
-        role = "audience";
-      }
-    }
+    // Host "claim" (mit Takeover, falls alter Host nicht mehr online ist)
+if (role === "host") {
+  // wenn ein hostSocketId gespeichert ist, aber der Socket nicht mehr existiert -> freigeben
+  if (room.hostSocketId && !io.sockets.sockets.has(room.hostSocketId)) {
+    room.hostSocketId = null;
+  }
+
+  if (!room.hostSocketId) {
+    room.hostSocketId = socket.id;
+  } else if (room.hostSocketId !== socket.id) {
+    socket.emit("error_msg", "Es gibt bereits einen Host in diesem Raum.");
+    role = "audience";
+  }
+}
 
     room.clients.set(socket.id, { role, displayName: displayName || "Client", playerId: null });
 

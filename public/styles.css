@@ -121,3 +121,5 @@ button.ghost { background: transparent; border-color: transparent; font-size: 18
 .answer { font-size: 18px; font-weight: 800; }
 
 .hostOnly { display:none; }
+
+.audienceOnly { display: none; }

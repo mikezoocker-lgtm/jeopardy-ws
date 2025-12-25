@@ -65,6 +65,9 @@ function setHostUI() {
   document.querySelectorAll(".hostOnly").forEach((el) => {
     el.style.display = isHost ? "" : "none";
   });
+  document.querySelectorAll(".audienceOnly").forEach((el) => {
+    el.style.display = isHost ? "none" : "";
+  });
 }
 
 function findClueById(clueId) {
@@ -309,13 +312,19 @@ function connect(roomId, role, displayName) {
     socket.emit("join", { roomId, role, displayName });
   });
 
-  socket.on("joined", (payload) => {
-    isHost = payload.isHost;
-    role = payload.role;
-    joinOverlay.classList.add("hidden");
-    connInfo.textContent = `Raum ${payload.roomId} • ${isHost ? "HOST" : "ZUSCHAUER"}`;
-    setHostUI();
-  });
+socket.on("joined", (payload) => {
+  isHost = payload.isHost;
+  role = payload.role;
+
+  // Wenn Host angefragt, aber nicht bekommen: klar sagen
+  if (roleSelect.value === "host" && !isHost) {
+    joinMsg.textContent = "Du bist nicht Host geworden (es gibt bereits einen Host in diesem Raum).";
+  }
+
+  joinOverlay.classList.add("hidden");
+  connInfo.textContent = `Raum ${payload.roomId} • ${isHost ? "HOST" : "ZUSCHAUER"}`;
+  setHostUI();
+});
 
   socket.on("state", (newState) => {
     state = newState;

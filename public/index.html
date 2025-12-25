@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Jeopardy (WebSocket)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Jeopardy (WS)</h1>
+    <div class="muted small" id="connInfo">nicht verbunden</div>
+  </header>
+
+  <!-- Join Screen -->
+  <div id="joinOverlay" class="overlay">
+    <div class="overlayCard">
+      <h2>Raum beitreten</h2>
+      <div class="row">
+        <label>Raumcode</label>
+        <input id="roomInput" placeholder="z.B. ABC123" value="QUIZ" />
+      </div>
+      <div class="row">
+        <label>Rolle</label>
+        <select id="roleSelect">
+          <option value="audience">Zuschauer/Spieler</option>
+          <option value="host">Host</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>Name</label>
+        <input id="nameInput" placeholder="Dein Name" />
+      </div>
+      <div class="row">
+        <button id="joinBtn" class="good">Beitreten</button>
+      </div>
+      <p class="muted small">
+        Hinweis: Es kann nur <strong>einen Host</strong> pro Raum geben.
+      </p>
+      <div id="joinMsg" class="muted small"></div>
+    </div>
+  </div>
+
+  <main class="layout">
+    <section class="left">
+      <div class="panel">
+        <h2>Spieler</h2>
+
+        <div id="hostPlayerControls" class="hostOnly">
+          <div class="row">
+            <input id="newPlayerName" placeholder="Spielername" />
+            <button id="addPlayerBtn">Hinzufügen</button>
+          </div>
+          <p class="muted small">Host kann Spieler hinzufügen/löschen.</p>
+        </div>
+
+        <ul id="playersList" class="players"></ul>
+
+        <div class="panel inner">
+          <h3>Ich bin Spieler</h3>
+          <div class="row">
+            <select id="myPlayerSelect"></select>
+            <button id="saveMyPlayerBtn">Setzen</button>
+          </div>
+          <p class="muted small">Damit dein BUZZ einem Spieler zugeordnet ist.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Buzzer</h2>
+        <button id="buzzBtn" class="big">BUZZ!</button>
+        <div id="buzzStatus" class="muted small"></div>
+
+        <div id="hostBuzzControls" class="hostOnly">
+          <h3>Buzz-Reihenfolge</h3>
+          <ol id="buzzQueue"></ol>
+          <div class="row">
+            <button id="selectBuzzedBtn">1. auswählen</button>
+            <button id="clearBuzzBtn">Buzz leeren</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="right">
+      <div class="panel">
+        <h2>Spielbrett</h2>
+        <div id="board" class="board"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Frage-Overlay -->
+  <div id="qaOverlay" class="overlay hidden" role="dialog" aria-modal="true">
+    <div class="overlayCard">
+      <div class="overlayTop">
+        <div>
+          <div id="overlayMeta" class="muted small"></div>
+          <h2 id="overlayQuestion"></h2>
+        </div>
+        <button id="closeOverlayBtn" class="ghost">✕</button>
+      </div>
+
+      <div id="hostAnswerBlock" class="hostOnly answerBlock">
+        <h3>Antwort (nur Host)</h3>
+        <div id="overlayAnswer" class="answer"></div>
+      </div>
+
+      <div class="panel inner">
+        <div class="row">
+          <label><strong>Antwortender Spieler:</strong></label>
+          <select id="answeringPlayerSelect" class="hostOnly"></select>
+          <span id="answeringNote" class="muted small"></span>
+        </div>
+
+        <div id="hostJudgeControls" class="hostOnly row">
+          <button id="markCorrectBtn" class="good">Richtig (+)</button>
+          <button id="markWrongBtn" class="bad">Falsch (-½) & Buzzer</button>
+        </div>
+
+        <div class="muted small">
+          Zuschauer sehen nie die Antwort. Der Host entscheidet.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- socket.io client -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

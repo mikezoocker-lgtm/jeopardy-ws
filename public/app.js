@@ -1,6 +1,8 @@
 // public/app.js
 // Jeopardy WS Client (Host/Audience) - Socket.IO
 
+console.log("APP STARTED");
+
 let socket = null;
 let state = null;
 let roomId = null;
@@ -313,16 +315,17 @@ function connect(roomId, role, displayName) {
   });
 
 socket.on("joined", (payload) => {
+  console.log("JOINED PAYLOAD:", payload);
+
   isHost = payload.isHost;
   role = payload.role;
 
-  // Wenn Host angefragt, aber nicht bekommen: klar sagen
-  if (roleSelect.value === "host" && !isHost) {
-    joinMsg.textContent = "Du bist nicht Host geworden (es gibt bereits einen Host in diesem Raum).";
-  }
+  console.log("IS HOST?", isHost);
 
   joinOverlay.classList.add("hidden");
-  connInfo.textContent = `Raum ${payload.roomId} • ${isHost ? "HOST" : "ZUSCHAUER"}`;
+  connInfo.textContent =
+    `Raum ${payload.roomId} • ${isHost ? "HOST" : "ZUSCHAUER"}`;
+
   setHostUI();
 });
 
